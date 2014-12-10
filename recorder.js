@@ -1,7 +1,7 @@
 (function (window, undefined){
 
-	var RECORDER_WORKER_PATH = '../assets/recorderWorker.js';
-	var MP3_WORKER_PATH      = '../assets/mp3Worker.js';
+	var RECORDER_WORKER_PATH = 'recorderWorker.js';
+	var MP3_WORKER_PATH      = 'mp3Worker.js';
 	
 	window.AudioContext      = (
 								window.AudioContext 
