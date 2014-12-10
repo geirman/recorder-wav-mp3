@@ -18,6 +18,18 @@
 		var _cfg = cfg || {};
 		this.context = new AudioContext;
 
+		this.play = function(){
+			console.log('playing');
+		}
+
+		this.stop = function(){
+			console.log('stopping');
+		}
+
+		this.record = function(){
+			console.log('recording');
+		}
+
 		this.pause = function(){
 			console.log('pausing');
 		}
@@ -25,37 +37,20 @@
 		return this;
 	}
 
-	Recorder.prototype.play = function() {
-		console.log('playing');
+	Recorder.prototype.getAudioSrc = function() {
+		navigator.getUserMedia( { audio: true, video: false },
+								  this.onStreamSuccess.bind(this),
+								  this.onStreamFailure.bind(this) );
 	}
 
-	Recorder.prototype.stop = function() {
-		console.log('stopping');
+	Recorder.prototype.onStreamSuccess = function( stream ) {
+		var input = this.context.createMediaStreamSource( stream );
 	}
 
-
-	window.onload = function init() {
-		try {
-
-			window.URL			   = (
-										window.URL
-										|| window.webkitURL );
-
-			console.info('getUserMedia = ' + (navigator.getUserMedia ? 'available' : 'UNAVAILABLE'));
-
-		} catch (error) {
-			console.warn('ERROR: web audio is not supported by this browser');
-		}
-
-		navigator.getUserMedia({
-			audio: true, 
-			video: false
-			}, 
-				startUserMedia, 
-				function(error){
-					console.warn('ERROR: unable to get user media: ' + error);
-				})
+	Recorder.prototype.onStreamFailure = function ( error ) {
+		console.error('ERROR: unable to get audio source (microphone)');
 	}
+
 
 	//expose public methods
 	window.Recorder = Recorder;
