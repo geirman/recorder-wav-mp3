@@ -13,10 +13,13 @@
 								|| navigator.msGetUserMedia );	
 	
 
-	var Recorder = function(cfg) {
+	var Recorder = function( cfg ) {
 
 		var _cfg = cfg || {};
-		this.context = new AudioContext;
+
+		(function init( _ ){
+			_.getAudioStream();
+		})(this);
 
 		this.play = function(){
 			console.log('playing');
@@ -34,17 +37,24 @@
 			console.log('pausing');
 		}
 
+		this.clear = function(){
+			console.log('cleared');
+		}
+
 		return this;
 	}
 
-	Recorder.prototype.getAudioSrc = function() {
+	Recorder.prototype.getAudioStream = function() {
 		navigator.getUserMedia( { audio: true, video: false },
 								  this.onStreamSuccess.bind(this),
 								  this.onStreamFailure.bind(this) );
 	}
 
 	Recorder.prototype.onStreamSuccess = function( stream ) {
+		this.context = new AudioContext;
 		var input = this.context.createMediaStreamSource( stream );
+		console.info('>> input = this.context.createMediaSource( stream )');
+		console.log(input);
 	}
 
 	Recorder.prototype.onStreamFailure = function ( error ) {
