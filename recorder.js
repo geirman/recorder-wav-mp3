@@ -15,11 +15,27 @@
 
 	var Recorder = function( cfg ) {
 
-		var _cfg = cfg || {};
+		var _cfg      = cfg || {};
+		var bufferLen = _cfg.bufferLen || 4096;
+		var worker    = new Worker( _cfg.workerPath || RECORDER_WORKER_PATH );
+		var recording = false;
+		var currCallback;
+		this.context  = new AudioContext;
+		this.node     = ( this.context.createScriptProcessor
+						  || this.context.createJavaScriptNode).call(this.context, bufferLen, 2, 2);
 
-		(function init( _ ){
-			_.getAudioStream();
-		})(this);
+
+		(function init( recorder, worker ){
+			recorder.getAudioStream();
+
+			worker.postMessage({
+				command: 'init',
+				config: {
+					sampleRate: recorder.context.sampleRate
+				}
+			});
+
+		})(this, worker);
 
 		this.play = function(){
 			console.log('playing');
@@ -51,7 +67,6 @@
 	}
 
 	Recorder.prototype.onStreamSuccess = function( stream ) {
-		this.context = new AudioContext;
 		var input = this.context.createMediaStreamSource( stream );
 		console.info('>> input = this.context.createMediaSource( stream )');
 		console.log(input);
