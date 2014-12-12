@@ -187,17 +187,7 @@
 			fd.append('fname', mp3Name);
 			fd.append('data', event.target.result);
 			// This is where I'd upload to fireBase
-			saveMP3(event.target.result);
-			// $.ajax({
-			// 	type: 'POST',
-			// 	url: 'upload.php',
-			// 	data: fd,
-			// 	processData: false,
-			// 	contentType: false
-			// }).done(function(data) {
-			// 	//console.log(data);
-			// 	__log('uploadAudio', data);
-			// });
+			// saveMP3(event.target.result);
 		};      
 		reader.readAsDataURL(mp3Data);
 	}
