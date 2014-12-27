@@ -1,7 +1,7 @@
 (function (window, undefined){
 
-	var RECORDER_WORKER_PATH = 'recorderWorker.js';
-	var encoderWorker        = new Worker('mp3Worker.js');
+	var RECORDER_WORKER_PATH = 'lib/recorderWorker.js';
+	var encoderWorker        = new Worker('lib/mp3Worker.js');
 	
 	window.AudioContext      = (
 								window.AudioContext 
