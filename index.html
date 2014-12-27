@@ -8,6 +8,19 @@
  
     <!-- Bootstrap -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        #recordings > div {
+            margin-top: 20px;
+            border-top: 1px dotted black;
+            /*border-bottom: 1px dotted black;*/
+            padding: 10px 0px;
+        }
+
+        audio ~ a {
+            display: block;
+        }
+    </style>
  
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -19,11 +32,13 @@
   <body class="container">
     <h1>Building a JS Constructor</h1>
     <div>
-        <button class="btn btn-primary" onclick="start(this)">Record</button>
-        <button class="btn btn-danger" onclick="stop(this)" disabled>Stop</button>
+        <button class="btn btn-primary" onclick="startRec(this)">Record</button>
+        <button class="btn btn-danger" onclick="stopRec(this)" disabled>Stop</button>
     </div>
 
-    <ul id="recordings"></ul>
+    <div id="recordings">
+
+    </div>
  
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -35,24 +50,58 @@
     var cfg = {};
     var audio = new Recorder(cfg);
 
-    function start( btn ){
-        audio && audio.record();
+    function startRec( btn ){
+        // audio && audio.record();
+        audio.record();
         btn.disabled = true;
         btn.nextElementSibling.disabled = false;
     }
 
-    function stop( btn ){
-        audio && audio.stop();
+    function stopRec( btn ){
+        // audio && audio.stop();
+        audio.stop();
         btn.disabled = true;
         btn.previousElementSibling.disabled = false;
 
-        createDownloadLink();
+        createPreview( 'recordings' );
         audio.clear();
     }
 
-    function createDownloadLink() {
-        audio && audio.exportWAV( function(blob) {
+    function createPreview( containerId ) {
+        // audio && audio.exportWAV( function(blob) {
+        var targetContainer = document.getElementById( containerId );
+        var filename = 'recording_'+ new Date().getTime();
+        
+        audio.exportWAV( function( mediaObj ) {
 
+            if( mediaObj.blob.type == 'audio/mp3' ){
+                console.info('>> MP3 OBJECT');
+                console.log( mediaObj );
+
+
+                var url = mediaObj.url;
+                var div = document.createElement('div');
+                var player = document.createElement('audio');
+                var link = document.createElement('a');
+                  
+                player.controls = true;
+                player.src = url;
+                link.href = url;
+                link.download = filename + '.mp3';
+                link.innerHTML = link.download;
+                div.appendChild(player);
+                div.appendChild(link);
+                targetContainer.appendChild(div);                
+            } else {
+
+                var url = URL.createObjectURL( mediaObj.blob );
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = filename + '.wav';
+                link.innerHTML = link.download;
+                targetContainer.appendChild(link);
+
+            }
         });
     }
 

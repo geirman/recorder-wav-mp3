@@ -43,19 +43,19 @@
 
 		this.stop = function(){
 			recording = false;
-			console.log('stopping');
+			console.log('recording stopped');
 		}
 
 		this.record = function(){
 			recording = true;
-			console.log('recording');
+			console.log('recording started');
 		}
 
 		this.clear = function(){
 			worker.postMessage({
 				command: 'clear'
 			});
-			console.log('cleared');
+			console.log('recording cleared');
 		}
 
 		this.node.onaudioprocess = function( e ){
@@ -99,8 +99,14 @@
 
 		// Convert to MP3
 		worker.onmessage = function( e ){
-	      var blob = event.data;
-		  console.log("the blob " +  blob + " " + blob.size + " " + blob.type);
+
+		  var wav = {
+		  	blob: e.data,
+		  	url: 'undefined'
+		  }
+		  
+		  console.info(">> wav.blob ");
+		  console.log(wav.blob);
 		  
 		  var arrayBuffer;
 		  var fileReader = new FileReader();
@@ -109,10 +115,12 @@
 			arrayBuffer = this.result;
 			var buffer = new Uint8Array(arrayBuffer),
 	        data = parseWav(buffer);
+
+	        wav.url = encode64( data );
 	        
 	        console.log(data);
 			// console.log("Converting to Mp3");
-			console.info("Converting to Mp3");
+			console.info("MP3 Conversion: START");
 
 	        encoderWorker.postMessage({ cmd: 'init', config:{
 	            mode : 3,
@@ -125,40 +133,25 @@
 	        encoderWorker.postMessage({ cmd: 'finish'});
 	        encoderWorker.onmessage = function( e ) {
 	            if (e.data.cmd == 'data') {
+
+	            	// this === worker
 				
 					// console.log(e);
-					console.info("Done converting to Mp3");
-					
-					/*var audio = new Audio();
-					audio.src = 'data:audio/mp3;base64,'+encode64(e.data.buf);
-					audio.play();*/
-	                
-					//console.log ("The Mp3 data " + e.data.buf);
-					
-					var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
-					uploadAudio(mp3Blob);
-					
-					var url = 'data:audio/mp3;base64,'+encode64(e.data.buf);
-					var li = document.createElement('li');
-					var au = document.createElement('audio');
-					var hf = document.createElement('a');
+					console.info("MP3 Conversion: COMPLETE");
 
-					console.log(mp3Blob);
-					  
-					au.controls = true;
-					au.src = url;
-					hf.href = url;
-					hf.download = 'audio_recording_' + new Date().getTime() + '.mp3';
-					hf.innerHTML = hf.download;
-					li.appendChild(au);
-					li.appendChild(hf);
-					recordings.appendChild(li);
+					var mp3 = {
+						blob: new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'}),
+						url: 'data:audio/mp3;base64,'+encode64(e.data.buf)
+					};
+					
+					uploadAudio( mp3.blob );
+					currCallback( mp3 );
 					
 	            }
 	        };
 		  };
-		  fileReader.readAsArrayBuffer(blob);
-	      currCallback(blob);		
+		  fileReader.readAsArrayBuffer(wav.blob);
+	      currCallback(wav);		
 		}
 
 	function encode64(buffer) {
@@ -236,6 +229,7 @@
 		var input = this.context.createMediaStreamSource( stream );
 	    input.connect(this.node);
 	    this.node.connect(this.context.destination);		
+		
 		console.info('>> input = this.context.createMediaSource( stream )');
 		console.log(input);
 	}
