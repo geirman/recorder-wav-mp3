@@ -86,8 +86,8 @@
             player.controls = true;
         
         div.appendChild(player);
-        div.appendChild(linkMP3);
         div.appendChild(linkWAV);
+        div.appendChild(linkMP3);
         targetContainer.appendChild(div);
         
         audio.exportWAV( function( mediaObj ) {
@@ -95,10 +95,8 @@
             if( mediaObj.blob.type == 'audio/mp3' ){
 
                 var url = mediaObj.url;
-                targetPlayer = document.getElementById( 'PLAYER-'+ timestamp );
                 targetLink = document.getElementById( 'MP3-'+ timestamp );
                 
-                targetPlayer.src = url;
                 targetLink.href = url;
                 targetLink.download = filename +'.mp3';
                 targetLink.innerHTML = targetLink.download;
@@ -106,8 +104,10 @@
             } else {
 
                 var url = URL.createObjectURL( mediaObj.blob );
+                targetPlayer = document.getElementById( 'PLAYER-'+ timestamp );
                 targetLink = document.getElementById( 'WAV-'+ timestamp );
                 
+                targetPlayer.src = url;
                 targetLink.href = url;
                 targetLink.download = filename +'.wav';
                 targetLink.innerHTML = targetLink.download;
