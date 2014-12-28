@@ -69,37 +69,48 @@
 
     function createPreview( containerId ) {
         // audio && audio.exportWAV( function(blob) {
+
         var targetContainer = document.getElementById( containerId );
-        var filename = 'recording_'+ new Date().getTime();
+        var timestamp = new Date().getTime();
+        var filename = 'recording_'+ timestamp;
+        var div = document.createElement('div');
+
+        var linkMP3 = document.createElement('a');
+            linkMP3.setAttribute('id', 'MP3-'+ timestamp);
+        
+        var linkWAV = document.createElement('a');
+            linkWAV.setAttribute('id', 'WAV-'+ timestamp);
+
+        var player = document.createElement('audio');
+            player.setAttribute('id', 'PLAYER-'+ timestamp);
+            player.controls = true;
+        
+        div.appendChild(player);
+        div.appendChild(linkMP3);
+        div.appendChild(linkWAV);
+        targetContainer.appendChild(div);
         
         audio.exportWAV( function( mediaObj ) {
 
             if( mediaObj.blob.type == 'audio/mp3' ){
-                console.info('>> MP3 OBJECT');
-                console.log( mediaObj );
-
 
                 var url = mediaObj.url;
-                var div = document.createElement('div');
-                var player = document.createElement('audio');
-                var link = document.createElement('a');
-                  
-                player.controls = true;
-                player.src = url;
-                link.href = url;
-                link.download = filename + '.mp3';
-                link.innerHTML = link.download;
-                div.appendChild(player);
-                div.appendChild(link);
-                targetContainer.appendChild(div);                
+                targetPlayer = document.getElementById( 'PLAYER-'+ timestamp );
+                targetLink = document.getElementById( 'MP3-'+ timestamp );
+                
+                targetPlayer.src = url;
+                targetLink.href = url;
+                targetLink.download = filename +'.mp3';
+                targetLink.innerHTML = targetLink.download;
+              
             } else {
 
                 var url = URL.createObjectURL( mediaObj.blob );
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = filename + '.wav';
-                link.innerHTML = link.download;
-                targetContainer.appendChild(link);
+                targetLink = document.getElementById( 'WAV-'+ timestamp );
+                
+                targetLink.href = url;
+                targetLink.download = filename +'.wav';
+                targetLink.innerHTML = targetLink.download;
 
             }
         });
