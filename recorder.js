@@ -85,7 +85,7 @@
 			});
 		}
 
-		this.exportWAV = function( callback, type ){
+		this.export = function( callback, type ){
 			currCallback = callback || _cfg.callback;
 			type         = type || _cfg.type || 'audio/wav';
 
@@ -116,10 +116,6 @@
 			var buffer = new Uint8Array(arrayBuffer),
 	        data = parseWav(buffer);
 
-	        wav.url = encode64( data );
-	        
-	        console.log(data);
-			// console.log("Converting to Mp3");
 			console.info("MP3 Conversion: START");
 
 	        encoderWorker.postMessage({ cmd: 'init', config:{
@@ -141,17 +137,16 @@
 
 					var mp3 = {
 						blob: new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'}),
-						url: 'data:audio/mp3;base64,'+encode64(e.data.buf)
+						url: 'data:audio/mp3;base64,'+ encode64(e.data.buf)
 					};
 					
-					uploadAudio( mp3.blob );
 					currCallback( mp3 );
 					
 	            }
 	        };
 		  };
-		  fileReader.readAsArrayBuffer(wav.blob);
-	      currCallback(wav);		
+		  fileReader.readAsArrayBuffer( wav.blob );
+	      currCallback( wav );		
 		}
 
 	function encode64(buffer) {
@@ -196,25 +191,7 @@
 		}
 		return f32Buffer;
 	}
-	
-	function uploadAudio(mp3Data){
-		var reader = new FileReader();
-		reader.onload = function(event){
-			console.log('uploadAudio event');
-			console.log(event);
-			var fd = new FormData();
-			var mp3Name = encodeURIComponent('audio_recording_' + new Date().getTime() + '.mp3');
-			console.log("mp3name = " + mp3Name);
-			fd.append('fname', mp3Name);
-			fd.append('data', event.target.result);
-			// This is where I'd upload to fireBase
-			// saveMP3(event.target.result);
-		};      
-		reader.readAsDataURL(mp3Data);
-	}
-
-
-	
+		
     //this should not be necessary
 		return this;
 	}

@@ -44,6 +44,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.firebase.com/js/client/2.0.6/firebase.js"></script>
     <script src="recorder.js"></script>
     <script>
 
@@ -77,9 +78,15 @@
 
         var linkMP3 = document.createElement('a');
             linkMP3.setAttribute('id', 'MP3-'+ timestamp);
+
+        var iconMP3 = document.createElement('img');
+            iconMP3.setAttribute('src', 'images/i-mp3.jpeg');
         
         var linkWAV = document.createElement('a');
             linkWAV.setAttribute('id', 'WAV-'+ timestamp);
+
+        var iconWAV = document.createElement('img');
+            iconWAV.setAttribute('src', 'images/i-wav.jpeg');
 
         var player = document.createElement('audio');
             player.setAttribute('id', 'PLAYER-'+ timestamp);
@@ -90,7 +97,7 @@
         div.appendChild(linkMP3);
         targetContainer.appendChild(div);
         
-        audio.exportWAV( function( mediaObj ) {
+        audio.export( function( mediaObj ) {
 
             if( mediaObj.blob.type == 'audio/mp3' ){
 
@@ -100,8 +107,10 @@
                 targetLink.href = url;
                 targetLink.download = filename +'.mp3';
                 targetLink.innerHTML = targetLink.download;
+
+                saveAudio( url, filename );
               
-            } else {
+            } else { // 'audio/wav'
 
                 var url = URL.createObjectURL( mediaObj.blob );
                 targetPlayer = document.getElementById( 'PLAYER-'+ timestamp );
@@ -116,7 +125,17 @@
         });
     }
 
+    function saveAudio( url, filename ){
+        console.info('>> saving audio: url');
+        console.log( url );
 
+        ref = new Firebase('https://luminous-fire-443.firebaseio.com/audio/1');
+        ref.set({
+            filetype: 'audio/mp3',
+            base64Str: url,
+            filename: filename +'.mp3'
+        });
+    }
  
     </script>
   </body>
