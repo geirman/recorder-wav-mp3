@@ -14,7 +14,6 @@ Using HTML5 Web Audio API, access the user's microphone, record, then provide a 
 * Shows example of saving to Firebase
 
 ##Todo
-* hide my firebase url from public
 * Add visualizer when recording
 * Log debug data to console only when cfg.debug = true
 * Allow user to replace download text with icons 

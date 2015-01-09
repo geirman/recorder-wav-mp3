@@ -141,15 +141,26 @@
     }
 
     function saveAudio( url, filename ){
-        console.info('>> saving audio: url');
-        console.log( url );
 
-        ref = new Firebase('https://luminous-fire-443.firebaseio.com/audio/1');
-        ref.set({
-            filetype: 'audio/mp3',
-            base64Str: url,
-            filename: filename +'.mp3'
-        });
+        var firebaseUrl = 'your_firebase_url';
+
+        if(firebaseUrl !== 'your_firebase_url'){
+            
+            console.info('>> saving audio: url');
+            console.log( url );
+
+            ref = new Firebase( firebaseUrl );
+            ref.set({
+                filetype: 'audio/mp3',
+                base64Str: url,
+                filename: filename +'.mp3'
+            });
+        
+        }else{
+
+            console.warn('Audio not saved to firebase because firebaseUrl is undefined.');
+
+        }
     }
  
     </script>
