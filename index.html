@@ -20,6 +20,7 @@
         audio ~ a {
             display: block;
         }
+
     </style>
  
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -32,8 +33,8 @@
   <body class="container">
     <h1>Building a JS Constructor</h1>
     <div>
-        <button class="btn btn-primary" onclick="startRec(this)">Record</button>
-        <button class="btn btn-danger" onclick="stopRec(this)" disabled>Stop</button>
+        <button class="btn btn-primary" onclick="toggle(this)">Record</button>
+        <!-- <button class="btn btn-danger" onclick="stopRec(this)" disabled>Stop</button> -->
     </div>
 
     <div id="recordings">
@@ -48,24 +49,38 @@
     <script src="recorder.js"></script>
     <script>
 
-    var cfg = {};
-    var audio = new Recorder(cfg);
+    var audio;
 
-    function startRec( btn ){
-        // audio && audio.record();
-        audio.record();
-        btn.disabled = true;
-        btn.nextElementSibling.disabled = false;
+    function init() {
+        var cfg = {};
+        audio = new Recorder(cfg);
     }
 
-    function stopRec( btn ){
-        // audio && audio.stop();
-        audio.stop();
-        btn.disabled = true;
-        btn.previousElementSibling.disabled = false;
 
-        createPreview( 'recordings' );
-        audio.clear();
+    function toggle( btn ){
+        // audio && audio.record();
+
+        if(audio instanceof Recorder){
+
+
+            var btnLabel = btn.firstChild.nodeValue;
+
+            if( btnLabel === 'Record' ){
+                audio.record();
+            }else{
+               audio.stop();
+               createPreview( 'recordings' );
+               audio.clear();
+            }
+
+            btn.firstChild.nodeValue = (btnLabel === 'Record') ? 'Stop' : 'Record';
+            btn.setAttribute('class', (btn.getAttribute('class') === 'btn btn-primary') ? 'btn btn-danger' : 'btn btn-primary');
+
+        } else {
+            init();
+            toggle( btn );
+        }
+
     }
 
     function createPreview( containerId ) {
